@@ -1,0 +1,13 @@
+{
+  "AutoRestart.Chat.Prefix": "[{green}AutoRestart{default}]",
+  "AutoRestart.Chat.PluralSuffix": "s",
+  "AutoRestart.Chat.MinuteLabel": "minute",
+  "AutoRestart.Chat.SecondLabel": "second",
+  "AutoRestart.Console.ConfigVersionMismatch": "Configuration version mismatch (Expected: {0} | Current: {1}).",
+  "AutoRestart.Console.ConfigUpdate": "Restart time updated from {0} to {1}.",
+  "AutoRestart.Console.NoChangeInRestartTime": "Configuration updated, no changes in restart time.",
+  "AutoRestart.Chat.RestartNotification": "Restarting the server will be {0}",
+  "AutoRestart.Console.HibernateWarning": "'sv_hibernate_when_empty' ConVar is enabled. This plugin might not work as expected.",
+  "AutoRestart.Error.CannotCalculateRestartTime": "It was not possible to calculate the time before restarting the server.",
+  "AutoRestart.Console.ServerShutdownInitiated": "Server shutdown initiated."
+}
