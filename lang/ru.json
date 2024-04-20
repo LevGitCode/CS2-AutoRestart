@@ -1,0 +1,15 @@
+{
+  "AutoRestart.Chat.Prefix": "[{green}AutoRestart{default}]",
+  "AutoRestart.Chat.PluralSuffix": "ы",
+  "AutoRestart.Chat.MinuteLabel": "минута",
+  "AutoRestart.Chat.SecondLabel": "секунда",
+  "AutoRestart.Console.ConfigVersionMismatch": "Несоответствие версий конфигурации (Ожидаемая: {0} | Текущая: {1}).",
+  "AutoRestart.Console.ConfigUpdate": "Время перезапуска обновлено с {0} на {1}.",
+  "AutoRestart.Console.NoChangeInRestartTime": "Конфигурация обновлена, изменений во времени перезапуска нет.",
+  "AutoRestart.Chat.RestartNotification": "Перезапуск сервера будет через {0}",
+  "AutoRestart.Console.HibernateWarning": "ConVar 'sv_hibernate_when_empty' активирован. Этот плагин может работать не как ожидается.",
+  "AutoRestart.Error.CannotCalculateRestartTime": "Не удалось рассчитать время до перезапуска сервера.",
+  "AutoRestart.Error.FailedToCalculateRestart": "Не удалось рассчитать время перезапуска.",
+  "AutoRestart.Console.ServerShutdownInitiated": "Инициировано выключение сервера.",
+  "AutoRestart.Console.RestartScheduled": "Запланирован перезапуск сервера на {0}."
+}

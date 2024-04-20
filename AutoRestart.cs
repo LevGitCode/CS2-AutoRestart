@@ -38,9 +38,9 @@
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
             RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
 
+            SetupRestartTimer();
             base.Load(hotReload);
 
-            SetupRestartTimer();
         }
 
         public override void Unload(bool hotReload)
@@ -64,7 +64,7 @@
                 Logger.LogWarning(Localizer["AutoRestart.Console.ConfigVersionMismatch", Config.Version, newConfig.Version]);
             }
 
-            if (newConfig.RestartTime != Config.RestartTime)
+            if (newConfig.RestartTime != Config.RestartTime || newConfig.NotifyPlayersBeforeRestart != Config.NotifyPlayersBeforeRestart)
             {
                 Logger.LogInformation(Localizer["AutoRestart.Console.ConfigUpdate", Config.RestartTime, newConfig.RestartTime]);
                 Config = newConfig;
@@ -76,6 +76,7 @@
                 Config = newConfig;
             }
         }
+
 
         private void OnServerHibernationUpdate(bool isHibernating)
         {
@@ -140,14 +141,30 @@
             // Отменяем текущий таймер, если он уже был установлен
             CancelCurrentTimer();
 
-            // Устанавливаем новый таймер, который вызовет ManageServerRestart
-            _currentTimer = new Timer((float)_timeUntilRestart, () => {
-                Server.NextFrame(ManageServerRestart);
-            });
+            // Устанавливаем новый таймер, который вызовет процедуру перезагрузки сервера
+            _currentTimer = new Timer((float)_timeUntilRestart, ShutdownProcedure);
 
             DateTime nextRestartDateTime = DateTime.Now.AddSeconds(_timeUntilRestart);
             Logger.LogInformation(Localizer["AutoRestart.Console.RestartScheduled", nextRestartDateTime]);
         }
+
+        private void ShutdownProcedure()
+        {
+            double secondsUntilRestart = CalculateTimeUntilRestart();
+            if (secondsUntilRestart < 0)
+            {
+                Logger.LogError(Localizer["AutoRestart.Error.FailedToCalculateRestart"]);
+                return;
+            }
+
+            List<CCSPlayerController> players = GetCurrentPlayers();
+            if (Config.NotifyPlayersBeforeRestart && players.Count > 0 && (_isServerLoading || !CheckPlayers(players.Count)))
+            {
+                NotifyPlayers(players, secondsUntilRestart);
+            }
+            PrepareServerShutdown();
+        }
+
 
         private void CancelCurrentTimer()
         {
@@ -177,27 +194,45 @@
             // Проверяем, был ли игрок уже уведомлен о перезапуске
             if (PlayersNotified.TryGetValue(player.Slot, out bool notified) && notified) return HookResult.Continue;
 
+            // Рассчитываем время до перезагрузки
+            double secondsUntilRestart = CalculateTimeUntilRestart();
+            if (secondsUntilRestart < 0)
+            {
+                player.PrintToChat(Localizer["AutoRestart.Error.CannotCalculateRestartTime"]);
+                return HookResult.Continue;
+            }
+
             // Отмечаем игрока как уведомленного
             PlayersNotified[player.Slot] = true;
 
             // Отправляем уведомление игроку о предстоящем перезапуске
-            NotifyPlayerAboutRestart(player);
+            NotifyPlayerAboutRestart(player, secondsUntilRestart);
 
             return HookResult.Continue;
         }
 
-        private void NotifyPlayerAboutRestart(CCSPlayerController player)
+
+        private void NotifyPlayers(List<CCSPlayerController> players, double secondsUntilRestart)
         {
-            double secondsUntilRestart = CalculateTimeUntilRestart();
+            foreach (var player in players)
+            {
+                NotifyPlayerAboutRestart(player, secondsUntilRestart);
+                PlayersNotified[player.Slot] = true;
+            }
+        }
+
+
+
+        private void NotifyPlayerAboutRestart(CCSPlayerController player, double secondsUntilRestart)
+        {
             if (secondsUntilRestart < 0)
             {
                 player.PrintToChat(Localizer["AutoRestart.Error.CannotCalculateRestartTime"]);
                 return; // Обработка ошибки
             }
 
-            // Расчёт точного времени перезагрузки
             DateTime restartTime = DateTime.Now.AddSeconds(secondsUntilRestart);
-            string formattedRestartTime = restartTime.ToString("yyyy-MM-dd HH:mm:ss");  // Форматируем дату и время
+            string formattedRestartTime = restartTime.ToString("yyyy-MM-dd HH:mm:ss");
 
             double minutesUntilRestart = secondsUntilRestart / 60;
             bool useMinutes = minutesUntilRestart >= 1;
@@ -206,70 +241,44 @@
             string pluralSuffix = displayTime > 1 ? "s" : "";
             string timeToRestart = $"{Math.Floor(displayTime)} {Localizer[timeUnitLabel]}{pluralSuffix}";
 
-            // Включаем в сообщение точное время перезагрузки
             string message = $"{Localizer["AutoRestart.Chat.Prefix"]} {Localizer["AutoRestart.Chat.RestartNotification", timeToRestart]}. Server will restart at {formattedRestartTime}.";
             player.PrintToChat(message);
         }
 
 
-        private void ManageServerRestart()
-        {
-            Logger.LogInformation($" DEBUG Timer triggered at {DateTime.Now.ToString("HH:mm:ss")}. Checking conditions for restart.");
-
-            // Получаем текущих игроков на сервере
-            List<CCSPlayerController> players = GetCurrentPlayers();
-
-            // Проверяем, подходит ли момент для перезагрузки
-            if (_isServerLoading || !CheckPlayers(players.Count)) return;
-
-            // Уведомляем всех игроков о предстоящем перезапуске
-            foreach (var player in players)
-            {
-                NotifyPlayerAboutRestart(player);
-                PlayersNotified[player.Slot] = true;
-            }
-
-            // Устанавливаем таймер для перезагрузки сервера
-            if (_timeUntilRestart >= 0)
-            {
-                AddTimer((float)_timeUntilRestart, PrepareServerShutdown);
-                _restartRequired = true;
-            }
-            else
-            {
-                Logger.LogWarning("Time until restart is not set, recalculating...");
-                _timeUntilRestart = CalculateTimeUntilRestart();
-
-                if (!(_timeUntilRestart >= 0)) return;
-
-                AddTimer((float)_timeUntilRestart, PrepareServerShutdown);
-                _restartRequired = true;
-            }
-        }
 
         private void PrepareServerShutdown()
         {
-            List<CCSPlayerController> players = GetCurrentPlayers();
-
-            foreach (var player in players)
+            if (!_restartRequired)
             {
-                switch (player.Connected)
-                {
-                    case PlayerConnectedState.PlayerConnected:
-                    case PlayerConnectedState.PlayerConnecting:
-                    case PlayerConnectedState.PlayerReconnecting:
-                        Server.ExecuteCommand($"kickid {player.UserId} Due to server restart, the server is now restarting.");
-                        break;
-                }
+                Logger.LogInformation("No restart required at this time.");
+                return;
             }
 
-            AddTimer(1, ShutdownServer);
+            Logger.LogInformation("DEBUG: Preparing for server shutdown. Notifying and disconnecting players.");
+            List<CCSPlayerController> players = GetCurrentPlayers();
+            foreach (var player in players)
+            {
+                if (player.Connected == PlayerConnectedState.PlayerConnected ||
+                    player.Connected == PlayerConnectedState.PlayerConnecting ||
+                    player.Connected == PlayerConnectedState.PlayerReconnecting)
+                {
+                    Logger.LogInformation($"DEBUG: Disconnecting player {player.UserId}.");
+                    Server.ExecuteCommand($"kickid {player.UserId} Due to server restart, the server is now restarting.");
+                }
+            }
+            Logger.LogInformation("DEBUG: Server shutdown command will be issued next.");
+            AddTimer(1, ShutdownServer);  // Выполнение команды выключения сервера
         }
+
 
         private void ShutdownServer()
         {
+            if (!_restartRequired) return;
+
             Logger.LogInformation(Localizer["AutoRestart.Console.ServerShutdownInitiated"]);
             Server.ExecuteCommand("quit");
+            _restartRequired = false; // Сброс флага после перезагрузки
         }
 
         private static List<CCSPlayerController> GetCurrentPlayers()

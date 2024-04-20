@@ -1,0 +1,15 @@
+{
+  "AutoRestart.Chat.Prefix": "[{green}AutoRestart{default}]",
+  "AutoRestart.Chat.PluralSuffix": "s",
+  "AutoRestart.Chat.MinuteLabel": "minute",
+  "AutoRestart.Chat.SecondLabel": "seconde",
+  "AutoRestart.Console.ConfigVersionMismatch": "Incompatibilité de version de configuration (Attendue : {0} | Actuelle : {1}).",
+  "AutoRestart.Console.ConfigUpdate": "Heure de redémarrage mise à jour de {0} à {1}.",
+  "AutoRestart.Console.NoChangeInRestartTime": "Configuration mise à jour, aucun changement dans le temps de redémarrage.",
+  "AutoRestart.Chat.RestartNotification": "Le redémarrage du serveur sera dans {0}",
+  "AutoRestart.Console.HibernateWarning": "La ConVar 'sv_hibernate_when_empty' est activée. Ce plugin pourrait ne pas fonctionner comme prévu.",
+  "AutoRestart.Error.CannotCalculateRestartTime": "Impossible de calculer le temps avant le redémarrage du serveur.",
+  "AutoRestart.Error.FailedToCalculateRestart": "Échec du calcul du temps de redémarrage.",
+  "AutoRestart.Console.ServerShutdownInitiated": "Arrêt du serveur initié.",
+  "AutoRestart.Console.RestartScheduled": "Redémarrage du serveur prévu pour {0}."
+}

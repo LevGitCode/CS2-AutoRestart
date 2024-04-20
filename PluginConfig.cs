@@ -1,4 +1,4 @@
-п»їnamespace AutoRestart
+namespace AutoRestart
 {
     using System;
     using System.Text.Json.Serialization;
@@ -10,10 +10,10 @@
         public override int Version { get; set; } = 1;
 
         [JsonPropertyName("RestartTime")]
-        public string RestartTime { get; set; } = "21:30";  // Р’СЂРµРјСЏ РїРµСЂРµР·Р°РіСЂСѓР·РєРё СЃРµСЂРІРµСЂР° РІ С„РѕСЂРјР°С‚Рµ "HH:mm"
+        public string RestartTime { get; set; } = "03:50";  // Время перезагрузки сервера в формате "HH:mm"
 
-        //[JsonPropertyName("ShutdownDelay")]
-        //public int ShutdownDelay { get; set; } = 120;
+        [JsonPropertyName("NotifyPlayersBeforeRestart")]
+        public bool NotifyPlayersBeforeRestart { get; set; } = true;  //параметр для управления уведомлениями
 
         [JsonPropertyName("MinPlayersInstantShutdown")]
         public int MinPlayersInstantShutdown { get; set; } = 1;

@@ -9,5 +9,7 @@
   "AutoRestart.Chat.RestartNotification": "Restarting the server will be {0}",
   "AutoRestart.Console.HibernateWarning": "'sv_hibernate_when_empty' ConVar is enabled. This plugin might not work as expected.",
   "AutoRestart.Error.CannotCalculateRestartTime": "It was not possible to calculate the time before restarting the server.",
-  "AutoRestart.Console.ServerShutdownInitiated": "Server shutdown initiated."
+  "AutoRestart.Error.FailedToCalculateRestart": "Failed to calculate restart time.",
+  "AutoRestart.Console.ServerShutdownInitiated": "Server shutdown initiated.",
+  "AutoRestart.Console.RestartScheduled": "Server restart scheduled {0} ."
 }

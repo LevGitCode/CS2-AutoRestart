@@ -35,6 +35,7 @@
 {
   "ConfigVersion": 1,
   "RestartTime": "3:50",
+  "NotifyPlayersBeforeRestart": true,
   "MinPlayersInstantShutdown": 1,
   "MinPlayerPercentageShutdownAllowed": 0.6,
   "ShutdownOnMapChangeIfPendingUpdate": true

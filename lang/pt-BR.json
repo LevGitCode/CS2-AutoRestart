@@ -1,0 +1,15 @@
+{
+  "AutoRestart.Chat.Prefix": "[{green}AutoRestart{default}]",
+  "AutoRestart.Chat.PluralSuffix": "s",
+  "AutoRestart.Chat.MinuteLabel": "minuto",
+  "AutoRestart.Chat.SecondLabel": "segundo",
+  "AutoRestart.Console.ConfigVersionMismatch": "Incompatibilidade de versão de configuração (Esperada: {0} | Atual: {1}).",
+  "AutoRestart.Console.ConfigUpdate": "Tempo de reinicialização atualizado de {0} para {1}.",
+  "AutoRestart.Console.NoChangeInRestartTime": "Configuração atualizada, sem alterações no tempo de reinicialização.",
+  "AutoRestart.Chat.RestartNotification": "O reinício do servidor será em {0}",
+  "AutoRestart.Console.HibernateWarning": "A ConVar 'sv_hibernate_when_empty' está ativada. Este plugin pode não funcionar como esperado.",
+  "AutoRestart.Error.CannotCalculateRestartTime": "Não foi possível calcular o tempo antes de reiniciar o servidor.",
+  "AutoRestart.Error.FailedToCalculateRestart": "Falha ao calcular o tempo de reinício.",
+  "AutoRestart.Console.ServerShutdownInitiated": "Desligamento do servidor iniciado.",
+  "AutoRestart.Console.RestartScheduled": "Reinício do servidor agendado para {0}."
+}
