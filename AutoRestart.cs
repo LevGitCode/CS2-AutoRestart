@@ -162,8 +162,11 @@
             {
                 NotifyPlayers(players, secondsUntilRestart);
             }
+
+            _restartRequired = true;  // Установка флага, указывающего на необходимость перезапуска
             PrepareServerShutdown();
         }
+
 
 
         private void CancelCurrentTimer()
